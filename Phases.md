@@ -100,15 +100,15 @@ SELECT seniority, COUNT(*) FROM jobs GROUP BY seniority;"
 
 ---
 
-## Fase 5 — Data quality checks y alertas Telegram
+## Fase 5 — Data quality checks y alertas Telegram ✅
 
 **Objetivo:** el pipeline detecta anomalías y notifica por Telegram.
 
 **Tareas:**
-- Crear `scraper/alerts/telegram.py` con función `send_alert(message)`
-- Crear `scraper/quality/checks.py` con los 4 checks definidos en `ARCHITECTURE.md`
-- Integrar checks al final de `etl/pipeline.py`
-- Leer `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` desde variables de entorno
+- [x] Crear `scraper/alerts/telegram.py` con función `send_alert(message)` (de fase 3)
+- [x] Crear `scraper/quality/checks.py` con los 4 checks definidos en `ARCHITECTURE.md`
+- [x] Integrar `run_quality_checks(engine)` al final de `etl/pipeline.py`
+- [x] Leer `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` desde variables de entorno
 
 **Verificación:**
 ```bash
@@ -123,15 +123,16 @@ run_checks(jobs_today=5, avg_7d=200, empty_descriptions=0, total=5, sources_with
 
 ---
 
-## Fase 6 — Generación de snapshots diarios
+## Fase 6 — Generación de snapshots diarios ✅
 
 **Objetivo:** al finalizar cada ejecución, se genera un registro en `daily_snapshots`.
 
 **Tareas:**
-- Crear `analytics/snapshot_generator.py` con lógica de agregación
-- Calcular: `total_jobs`, `total_companies`, `jobs_by_source`, `jobs_by_seniority`, `jobs_by_work_type`, `top_technologies` (top 20)
-- Insertar en `daily_snapshots` con `ON CONFLICT (snapshot_date) DO UPDATE`
-- Llamar al generador al final del pipeline principal
+- [x] Crear `analytics/snapshot_generator.py` con lógica de agregación
+- [x] Calcular: `total_jobs`, `total_companies`, `jobs_by_source`, `jobs_by_seniority`, `jobs_by_work_type`, `top_technologies` (top 20)
+- [x] Insertar en `daily_snapshots` con `ON CONFLICT (snapshot_date) DO UPDATE`
+- [x] Llamar al generador al final del pipeline principal
+- [x] Actualizar `docker/scraper.Dockerfile` para copiar `analytics/` al container
 
 **Verificación:**
 ```bash

@@ -126,8 +126,8 @@ No implementar ninguno de estos aunque parezca útil:
 - [x] Fase 2: Schema de base de datos
 - [x] Fase 3: Scraper — GetOnBoard
 - [x] Fase 4: ETL y procesamiento
-- [ ] Fase 5: Data quality checks y alertas Telegram
-- [ ] Fase 6: Generación de snapshots diarios
+- [x] Fase 5: Data quality checks y alertas Telegram
+- [x] Fase 6: Generación de snapshots diarios
 - [ ] Fase 7: Backend API
 - [ ] Fase 8: Frontend dashboard
 - [ ] Fase 9: Scraper — Remotive

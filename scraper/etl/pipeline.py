@@ -329,3 +329,120 @@ def run_pipeline(engine: Engine) -> dict:
 
     logger.info("pipeline_run_complete", **stats)
     return stats
+
+
+def run_quality_checks(engine: Engine) -> dict:
+    """Run data quality checks by querying the database.
+
+    Calculates the necessary metrics and calls run_checks().
+    If any check fails, a Telegram alert is sent automatically.
+
+    Args:
+        engine: SQLAlchemy engine connected to the target database.
+
+    Returns:
+        Result dict from run_checks() with checks_passed and failed_checks.
+    """
+    from scraper.quality.checks import run_checks
+
+    with engine.begin() as conn:
+        # Jobs scraped today
+        today_jobs = conn.execute(
+            text(
+                "SELECT COUNT(*) FROM jobs "
+                "WHERE DATE(scraped_at) = CURRENT_DATE"
+            )
+        ).scalar()
+
+        # Average daily job count over the last 7 days
+        avg_7d = conn.execute(
+            text(
+                "SELECT COALESCE(AVG(cnt), 0) FROM ("
+                "  SELECT COUNT(*) AS cnt FROM jobs "
+                "  WHERE scraped_at >= CURRENT_DATE - INTERVAL '7 days' "
+                "  GROUP BY DATE(scraped_at)"
+                ") sub"
+            )
+        ).scalar()
+
+        # Jobs today with empty or very short descriptions
+        empty_desc = conn.execute(
+            text(
+                "SELECT COUNT(*) FROM jobs "
+                "WHERE DATE(scraped_at) = CURRENT_DATE "
+                "AND LENGTH(COALESCE(description, '')) < 50"
+            )
+        ).scalar()
+
+        # Total jobs scraped today
+        total = conn.execute(
+            text(
+                "SELECT COUNT(*) FROM jobs "
+                "WHERE DATE(scraped_at) = CURRENT_DATE"
+            )
+        ).scalar()
+
+        # Sources that had new jobs today
+        sources_result = conn.execute(
+            text(
+                "SELECT DISTINCT s.name FROM sources s "
+                "JOIN jobs j ON j.source_id = s.id "
+                "WHERE DATE(j.scraped_at) = CURRENT_DATE"
+            )
+        )
+        sources_with_data = [row[0] for row in sources_result]
+
+        # All active sources
+        all_sources_result = conn.execute(
+            text("SELECT name FROM sources WHERE active = TRUE")
+        )
+        all_sources = [row[0] for row in all_sources_result]
+
+        # Jobs today without any linked technology
+        no_tech = conn.execute(
+            text(
+                "SELECT COUNT(*) FROM jobs j "
+                "LEFT JOIN job_technologies jt ON j.id = jt.job_id "
+                "WHERE DATE(j.scraped_at) = CURRENT_DATE "
+                "AND jt.job_id IS NULL"
+            )
+        ).scalar()
+
+    return run_checks(
+        jobs_today=today_jobs or 0,
+        avg_7d=float(avg_7d or 0),
+        empty_descriptions=empty_desc or 0,
+        total=total or 0,
+        sources_with_data=sources_with_data,
+        all_sources=all_sources,
+        jobs_without_tech=no_tech or 0,
+    )
+
+
+def run_pipeline_full(engine: Engine) -> dict:
+    """Ejecuta pipeline completo: ETL + quality checks + snapshot.
+
+    Alias para uso desde CLI cuando se quiere todo junto.
+
+    Args:
+        engine: SQLAlchemy engine connected to the target database.
+
+    Returns:
+        Dict con etl, quality_checks y snapshot.
+    """
+    # 1. ETL — procesar jobs sin tecnología linkada
+    etl_stats = run_pipeline(engine)
+
+    # 2. Quality checks
+    checks_result = run_quality_checks(engine)
+
+    # 3. Snapshot
+    from analytics.snapshot_generator import generate
+
+    snapshot = generate(engine)
+
+    return {
+        "etl": etl_stats,
+        "quality_checks": checks_result,
+        "snapshot": snapshot,
+    }
