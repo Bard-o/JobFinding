@@ -1,0 +1,35 @@
+# Environment
+.env
+.env.local
+.env.production
+
+# OpenCode
+.atl/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Docker
+.docker/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
