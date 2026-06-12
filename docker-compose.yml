@@ -48,5 +48,14 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
 
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    container_name: jobfinding_frontend
+    restart: always
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+
 volumes:
   postgres_data:

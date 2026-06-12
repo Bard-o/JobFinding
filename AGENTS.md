@@ -128,7 +128,7 @@ No implementar ninguno de estos aunque parezca útil:
 - [x] Fase 4: ETL y procesamiento
 - [x] Fase 5: Data quality checks y alertas Telegram
 - [x] Fase 6: Generación de snapshots diarios
-- [ ] Fase 7: Backend API
-- [ ] Fase 8: Frontend dashboard
+- [x] Fase 7: Backend API
+- [x] Fase 8: Frontend dashboard
 - [ ] Fase 9: Scraper — Remotive
 - [ ] Fase 10: Export de datos

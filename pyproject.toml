@@ -1,0 +1,9 @@
+[tool.pytest.ini_options]
+testpaths = ["scraper/tests", "backend/tests"]
+pythonpath = ["."]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"

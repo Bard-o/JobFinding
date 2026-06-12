@@ -144,18 +144,18 @@ SELECT snapshot_date, total_jobs, top_technologies FROM daily_snapshots ORDER BY
 
 ---
 
-## Fase 7 — Backend API
+## Fase 7 — Backend API ✅
 
 **Objetivo:** FastAPI sirviendo todos los endpoints definidos en `ARCHITECTURE.md`.
 
 **Tareas:**
-- Crear `backend/main.py` con app FastAPI
-- Crear `backend/database.py` con configuración de SQLAlchemy
-- Crear `backend/models/` con modelos ORM para cada tabla
-- Crear `backend/routers/` con un archivo por grupo de endpoints (`summary`, `technologies`, `jobs`, `export`)
-- Crear `backend/schemas/` con schemas Pydantic para responses
-- Crear `docker/backend.Dockerfile`
-- Configurar CORS para permitir el frontend en desarrollo
+- [x] Crear `backend/main.py` con app FastAPI
+- [x] Crear `backend/database.py` con configuración de SQLAlchemy
+- [x] Crear `backend/models/` con modelos ORM para cada tabla
+- [x] Crear `backend/routers/` con un archivo por grupo de endpoints
+- [x] Crear `backend/schemas/` con schemas Pydantic para responses
+- [x] Crear `docker/backend.Dockerfile`
+- [x] Configurar CORS para permitir el frontend en desarrollo
 
 **Verificación:**
 ```bash
@@ -175,22 +175,16 @@ curl http://localhost:8000/api/v1/technologies
 
 ---
 
-## Fase 8 — Frontend dashboard
+## Fase 8 — Frontend dashboard ✅
 
 **Objetivo:** dashboard funcional consumiendo la API, con charts de tecnologías, seniority y tendencias.
 
 **Tareas:**
-- Crear proyecto Vite + React + TypeScript en `frontend/`
-- Configurar TailwindCSS y shadcn/ui
-- Crear componentes:
-  - `SummaryCards` — total ofertas, empresas, tecnologías
-  - `TopTechnologiesChart` — bar chart con top 10 tecnologías (ECharts)
-  - `SeniorityPieChart` — distribución de seniority (ECharts)
-  - `WorkTypeChart` — remoto / híbrido / presencial (ECharts)
-  - `TrendsChart` — evolución temporal de tecnologías seleccionadas (ECharts)
-  - `JobsTable` — tabla con filtros: tecnología, seniority, work_type
-- Configurar `VITE_API_URL` desde `.env`
-- Crear `docker/frontend.Dockerfile` con build de producción
+- [x] Crear proyecto Vite + React + TypeScript en `frontend/`
+- [x] Configurar TailwindCSS y ECharts
+- [x] Crear componentes: SummaryCards, TopTechnologiesChart, SeniorityPieChart, WorkTypeChart, TrendsChart, JobsTable
+- [x] Configurar `VITE_API_URL` desde `.env`
+- [x] Crear `docker/frontend.Dockerfile` con build multi-stage (node → nginx)
 
 **Verificación:**
 ```bash
