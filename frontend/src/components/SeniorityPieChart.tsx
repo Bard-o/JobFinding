@@ -17,14 +17,18 @@ export default function SeniorityPieChart({ data }: SeniorityPieChartProps) {
 
   const option = {
     tooltip: { trigger: 'item' as const },
-    legend: { orient: 'vertical' as const, left: 'left' as const },
+    legend: {
+      orient: 'vertical' as const,
+      left: 'left' as const,
+      textStyle: { color: '#a3a3a3' },
+    },
     series: [
       {
         type: 'pie' as const,
         radius: ['40%', '70%'],
         avoidLabelOverlap: false,
-        itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
-        label: { show: true, formatter: '{b}: {c}' },
+        itemStyle: { borderRadius: 10, borderColor: '#171717', borderWidth: 2 },
+        label: { show: true, formatter: '{b}: {c}', color: '#a3a3a3' },
         data: entries.map(([name, value]) => ({
           name,
           value,

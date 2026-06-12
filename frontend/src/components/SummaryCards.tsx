@@ -34,11 +34,14 @@ export default function SummaryCards({ data }: SummaryCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {cards.map((card) => (
-        <div key={card.label} className="bg-white rounded-lg shadow p-6 flex items-center gap-4">
+        <div
+          key={card.label}
+          className="bg-card rounded-lg border border-border p-6 flex items-center gap-4 hover:border-orange-500/50 transition-colors"
+        >
           <span className="text-4xl">{card.icon}</span>
           <div>
-            <p className="text-sm text-gray-500">{card.label}</p>
-            <p className="text-3xl font-bold">{card.value.toLocaleString()}</p>
+            <p className="text-sm text-muted">{card.label}</p>
+            <p className="text-3xl font-bold text-white">{card.value.toLocaleString()}</p>
           </div>
         </div>
       ))}

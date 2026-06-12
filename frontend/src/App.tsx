@@ -24,7 +24,7 @@ function App() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-lg text-gray-500">Cargando dashboard...</div>
+        <div className="text-lg text-muted">Cargando dashboard...</div>
       </div>
     )
   }
@@ -38,10 +38,10 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">JobFinding Dashboard</h1>
-        <p className="text-gray-500">Mercado laboral tech en LATAM</p>
+        <h1 className="text-3xl font-bold text-white">JobFinding Dashboard</h1>
+        <p className="text-muted">Mercado laboral tech en LATAM</p>
       </header>
 
       <div className="space-y-6">
@@ -50,29 +50,29 @@ function App() {
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow p-4">
-            <h2 className="text-lg font-semibold mb-4">Top Tecnologías</h2>
+          <div className="bg-card rounded-lg border border-border p-4">
+            <h2 className="text-lg font-semibold text-white mb-4">Top Tecnologías</h2>
             <TopTechnologiesChart data={summary?.top_technologies ?? []} />
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <h2 className="text-lg font-semibold mb-4">Seniority</h2>
+          <div className="bg-card rounded-lg border border-border p-4">
+            <h2 className="text-lg font-semibold text-white mb-4">Seniority</h2>
             <SeniorityPieChart data={summary?.jobs_by_seniority ?? {}} />
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <h2 className="text-lg font-semibold mb-4">Modalidad</h2>
+          <div className="bg-card rounded-lg border border-border p-4">
+            <h2 className="text-lg font-semibold text-white mb-4">Modalidad</h2>
             <WorkTypeChart data={summary?.jobs_by_work_type ?? {}} />
           </div>
         </div>
 
         {/* Trends Chart */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <h2 className="text-lg font-semibold mb-4">Tendencias</h2>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h2 className="text-lg font-semibold text-white mb-4">Tendencias</h2>
           <TrendsChart />
         </div>
 
         {/* Jobs Table */}
-        <div className="bg-white rounded-lg shadow p-4">
-          <h2 className="text-lg font-semibold mb-4">Ofertas de Empleo</h2>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <h2 className="text-lg font-semibold text-white mb-4">Ofertas de Empleo</h2>
           <JobsTable />
         </div>
       </div>

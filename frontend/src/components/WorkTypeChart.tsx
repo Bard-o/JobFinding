@@ -16,6 +16,9 @@ export default function WorkTypeChart({ data }: WorkTypeChartProps) {
 
   const option = {
     tooltip: { trigger: 'item' as const },
+    legend: {
+      textStyle: { color: '#a3a3a3' },
+    },
     series: [
       {
         type: 'pie' as const,
@@ -25,6 +28,7 @@ export default function WorkTypeChart({ data }: WorkTypeChartProps) {
           value,
           itemStyle: { color: COLORS[name] || '#6b7280' },
         })),
+        label: { show: true, formatter: '{b}: {c}', color: '#a3a3a3' },
         emphasis: {
           itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' },
         },

@@ -19,7 +19,7 @@ export default function TrendsChart() {
 
   if (topTechs.length === 0) {
     return (
-      <div className="h-[300px] flex items-center justify-center text-gray-400">
+      <div className="h-[300px] flex items-center justify-center text-muted">
         Cargando tendencias...
       </div>
     )
@@ -29,9 +29,24 @@ export default function TrendsChart() {
 
   const option = {
     tooltip: { trigger: 'axis' as const },
-    legend: { data: topTechs.map((t) => t[0]) },
-    xAxis: { type: 'category' as const, data: dates, boundaryGap: false },
-    yAxis: { type: 'value' as const, name: 'Ofertas' },
+    legend: {
+      data: topTechs.map((t) => t[0]),
+      textStyle: { color: '#a3a3a3' },
+    },
+    xAxis: {
+      type: 'category' as const,
+      data: dates,
+      boundaryGap: false,
+      axisLabel: { color: '#a3a3a3' },
+      axisLine: { lineStyle: { color: '#262626' } },
+    },
+    yAxis: {
+      type: 'value' as const,
+      name: 'Ofertas',
+      nameTextStyle: { color: '#a3a3a3' },
+      axisLabel: { color: '#a3a3a3' },
+      splitLine: { lineStyle: { color: '#262626' } },
+    },
     series: topTechs.map(([name, points]) => ({
       name,
       type: 'line' as const,

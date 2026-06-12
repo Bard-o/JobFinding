@@ -1,4 +1,3 @@
-import ReactECharts from 'echarts-for-react'
 import type { Technology } from '@/types'
 
 interface TopTechnologiesChartProps {
@@ -7,24 +6,35 @@ interface TopTechnologiesChartProps {
 
 export default function TopTechnologiesChart({ data }: TopTechnologiesChartProps) {
   const top10 = data.slice(0, 10)
+  const maxCount = Math.max(...top10.map((d) => d.count), 1)
 
-  const option = {
-    tooltip: { trigger: 'axis' as const },
-    xAxis: {
-      type: 'category' as const,
-      data: top10.map((d) => d.name),
-      axisLabel: { rotate: 30, fontSize: 10 },
-    },
-    yAxis: { type: 'value' as const, name: 'Ofertas' },
-    series: [
-      {
-        type: 'bar' as const,
-        data: top10.map((d) => d.count),
-        itemStyle: { color: '#3b82f6' },
-      },
-    ],
-    grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+  if (top10.length === 0) {
+    return (
+      <div className="h-[300px] flex items-center justify-center text-muted">
+        No hay datos
+      </div>
+    )
   }
 
-  return <ReactECharts option={option} style={{ height: 300 }} />
+  return (
+    <div className="space-y-3">
+      {top10.map((tech) => {
+        const pct = (tech.count / maxCount) * 100
+        return (
+          <div key={tech.name} className="space-y-1">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted font-medium tracking-wide uppercase">{tech.name}</span>
+              <span className="text-white font-mono">{tech.count}</span>
+            </div>
+            <div className="w-full bg-neutral-800 rounded-full h-2">
+              <div
+                className="bg-accent h-2 rounded-full transition-all duration-300"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
