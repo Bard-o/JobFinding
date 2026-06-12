@@ -1,12 +1,11 @@
-"""CLI entry point for the GetOnBoard scraper.
+"""CLI entry point for the JobFinding scrapers.
 
 Usage::
 
-    python -m scraper --source getonboard --limit 50
-    python -m scraper --source getonboard --limit 0    # full scrape
+    python -m scraper --source getonbrd --limit 50
+    python -m scraper --source remotive --limit 100
 
-Orchestrates: source seeding → sitemap download → page scraping →
-data extraction → ETL pipeline → failure alerting.
+Orchestrates: source seeding → job fetching → ETL pipeline → failure alerting.
 """
 
 from __future__ import annotations
@@ -32,13 +31,17 @@ logger = structlog.get_logger(__name__)
 
 # Supported sources and their IDs in the database
 SOURCES: dict[str, int] = {
-    "getonbrd": 1,  # getonbrd.com (formerly getonboard)
+    "getonbrd": 1,   # getonbrd.com (formerly getonboard)
+    "remotive": 2,    # remotive.com
+}
+
+# Base URLs for each source (used for seeding)
+SOURCE_URLS: dict[str, str] = {
+    "getonbrd": "https://www.getonbrd.com",
+    "remotive": "https://remotive.com",
 }
 
 DEFAULT_LIMIT = 50
-
-# Country codes for API scraping
-COUNTRY_CODES = ["CL", "CO", "AR", "MX", "PE", "EC"]
 
 
 def seed_source(engine, source_id: int, source_name: str, base_url: str) -> None:
@@ -78,7 +81,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         "--source",
         required=True,
         choices=list(SOURCES.keys()),
-        help="Data source to scrape (currently: getonbrd).",
+        help="Data source to scrape (getonbrd, remotive).",
     )
     parser.add_argument(
         "--limit",
@@ -128,42 +131,45 @@ def main(argv: Optional[list[str]] = None) -> int:
             engine,
             source_id=source_id,
             source_name=source_name,
-            base_url="https://www.getonbrd.com",
+            base_url=SOURCE_URLS[source_name],
         )
     except Exception as e:
         logger.error("source_seed_failed", error=str(e))
-        send_alert(f"🔴 GetOnBoard scraper: failed to seed source — {e}")
+        send_alert(f"🔴 {source_name} scraper: failed to seed source — {e}")
         return 1
 
-    # Step 2: Fetch jobs from the API
+    # Step 2: Fetch jobs from the appropriate source
     jobs: list[JobData] = []
-    errors: list[str] = []
-    total_fetched = 0
 
     try:
-        for i, job in enumerate(fetch_jobs(country_code="CL", per_page=120), 1):
-            if limit and i > limit:
-                break
-            total_fetched += 1
-            jobs.append(job)
-            if i % 10 == 0:
-                logger.info("api_progress", processed=i, collected=len(jobs))
+        if source_name == "getonbrd":
+            for i, job in enumerate(fetch_jobs(country_code="CL", per_page=120), 1):
+                if limit and i > limit:
+                    break
+                jobs.append(job)
+                if i % 10 == 0:
+                    logger.info("api_progress", processed=i, collected=len(jobs))
+        elif source_name == "remotive":
+            from scraper.scrapers.remotive import RemotiveScraper
+
+            scraper = RemotiveScraper(limit=limit or 100)
+            jobs = scraper.run()
     except Exception as e:
-        logger.error("api_fetch_failed", error=str(e))
-        send_alert(f"🔴 GetOnBoard scraper: API fetch failed — {e}")
+        logger.error("fetch_failed", source=source_name, error=str(e))
+        send_alert(f"🔴 {source_name} scraper: fetch failed — {e}")
         return 1
 
     logger.info(
-        "api_fetch_complete",
-        total_fetched=total_fetched,
+        "fetch_complete",
+        source=source_name,
         jobs_collected=len(jobs),
     )
 
-    # Step 4: Run ETL pipeline
+    # Step 3: Run ETL pipeline
     if not jobs:
-        logger.warning("no_jobs_extracted")
+        logger.warning("no_jobs_collected", source=source_name)
         send_alert(
-            "⚠️ GetOnBoard scraper: zero jobs extracted from API. "
+            f"⚠️ {source_name} scraper: zero jobs collected. "
             f"Check API access or rate limiting."
         )
         return 0
@@ -172,18 +178,10 @@ def main(argv: Optional[list[str]] = None) -> int:
         stats = run_etl(jobs, engine, source_id=source_id)
     except Exception as e:
         logger.error("etl_failed", error=str(e))
-        send_alert(f"🔴 GetOnBoard scraper: ETL pipeline failed — {e}")
+        send_alert(f"🔴 {source_name} scraper: ETL pipeline failed — {e}")
         return 1
 
-    logger.info("scraper_complete", **stats)
-
-    # Alert if there were significant errors
-    if errors and len(errors) > len(urls_to_scrape) * 0.3:
-        send_alert(
-            f"⚠️ GetOnBoard scraper: {len(errors)}/{len(urls_to_scrape)} URLs "
-            f"failed to scrape. Stats: {stats}"
-        )
-
+    logger.info("scraper_complete", source=source_name, **stats)
     return 0
 
 

@@ -205,16 +205,16 @@ docker compose up frontend -d
 
 ---
 
-## Fase 9 — Scraper: Remotive
+## Fase 9 — Scraper: Remotive ✅
 
 **Objetivo:** segunda fuente de datos integrada al pipeline.
 
 **Tareas:**
-- Crear `scraper/scrapers/remotive.py` con clase `RemotiveScraper`
-- Remotive tiene API pública JSON en `https://remotive.com/api/remote-jobs` — usar esa en lugar de HTML scraping
-- Normalizar campos al mismo formato que GetOnBoard
-- Integrar al pipeline principal
-- Actualizar `scraper/main.py` para correr ambas fuentes en secuencia
+- [x] Crear `scraper/scrapers/remotive.py` con clase `RemotiveScraper`
+- [x] Remotive tiene API pública JSON en `https://remotive.com/api/remote-jobs`
+- [x] Normalizar campos al mismo formato que GetOnBoard
+- [x] Integrar al pipeline principal
+- [x] Actualizar `scraper/main.py` para correr ambas fuentes en secuencia
 
 **Verificación:**
 ```bash
