@@ -48,7 +48,7 @@ docker compose exec postgres psql -U jobfinding -d jobfinding -c "SELECT COUNT(*
 
 ---
 
-## Fase 3 — Scraper: GetOnBoard
+## Fase 3 — Scraper: GetOnBoard ✅
 
 **Objetivo:** scraper funcional que extrae ofertas de GetOnBoard y las inserta en la DB.
 
@@ -72,16 +72,16 @@ docker compose exec postgres psql -U postgres -d jobfinding -c "SELECT title, ur
 
 ---
 
-## Fase 4 — ETL y procesamiento
+## Fase 4 — ETL y procesamiento ✅
 
 **Objetivo:** pipeline que extrae tecnologías y seniority de las descripciones ya almacenadas.
 
 **Tareas:**
-- Crear `scraper/extractors/tech_extractor.py` con lógica de matching por diccionario (regex `\b{tech}\b`)
-- Crear `scraper/extractors/seniority_extractor.py` con keywords definidas en `ARCHITECTURE.md`
-- Poblar `job_technologies` para los jobs ya insertados
-- Actualizar columna `seniority` en `jobs`
-- Crear `scraper/etl/pipeline.py` que orqueste extracción → inserción
+- [x] Crear `scraper/extractors/tech_extractor.py` con lógica de matching por diccionario (regex `\b{tech}\b`)
+- [x] Crear `scraper/extractors/seniority_extractor.py` con keywords definidas en `ARCHITECTURE.md`
+- [x] Poblar `job_technologies` para los jobs ya insertados
+- [x] Actualizar columna `seniority` en `jobs`
+- [x] Crear `scraper/etl/pipeline.py` que orqueste extracción → inserción
 
 **Verificación:**
 ```bash

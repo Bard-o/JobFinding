@@ -124,8 +124,8 @@ No implementar ninguno de estos aunque parezca útil:
 
 - [x] Fase 1: Setup inicial (monorepo, Docker Compose, DB base)
 - [x] Fase 2: Schema de base de datos
-- [ ] Fase 3: Scraper — GetOnBoard
-- [ ] Fase 4: ETL y procesamiento
+- [x] Fase 3: Scraper — GetOnBoard
+- [x] Fase 4: ETL y procesamiento
 - [ ] Fase 5: Data quality checks y alertas Telegram
 - [ ] Fase 6: Generación de snapshots diarios
 - [ ] Fase 7: Backend API
