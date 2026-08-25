@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from scraper.main import SOURCES, DEFAULT_LIMIT, main, seed_source
+from scraper.main import DEFAULT_LIMIT, SOURCE_URLS, SOURCES, main, seed_source
 
 
 class TestSeedSource:
@@ -22,8 +22,12 @@ class TestSeedSource:
         mock_engine.begin.return_value.__exit__ = MagicMock(return_value=False)
         mock_create_engine.return_value = mock_engine
 
-        seed_source(mock_engine, source_id=1, source_name="getonbrd",
-                    base_url="https://www.getonbrd.com")
+        seed_source(
+            mock_engine,
+            source_id=1,
+            source_name="getonbrd",
+            base_url="https://www.getonbrd.com",
+        )
 
         mock_conn.execute.assert_called_once()
 
@@ -36,10 +40,18 @@ class TestSeedSource:
         mock_engine.begin.return_value.__exit__ = MagicMock(return_value=False)
         mock_create_engine.return_value = mock_engine
 
-        seed_source(mock_engine, source_id=1, source_name="getonbrd",
-                    base_url="https://www.getonbrd.com")
-        seed_source(mock_engine, source_id=1, source_name="getonbrd",
-                    base_url="https://www.getonbrd.com")
+        seed_source(
+            mock_engine,
+            source_id=1,
+            source_name="getonbrd",
+            base_url="https://www.getonbrd.com",
+        )
+        seed_source(
+            mock_engine,
+            source_id=1,
+            source_name="getonbrd",
+            base_url="https://www.getonbrd.com",
+        )
 
         assert mock_conn.execute.call_count == 2
 
@@ -51,6 +63,16 @@ class TestSources:
         """GetOnBoard (getonbrd) source is defined."""
         assert "getonbrd" in SOURCES
         assert SOURCES["getonbrd"] == 1
+
+    def test_remotive_source_exists(self) -> None:
+        """Remotive source is defined."""
+        assert "remotive" in SOURCES
+        assert SOURCES["remotive"] == 2
+
+    def test_source_urls_cover_all_sources(self) -> None:
+        """Every source has a corresponding base URL."""
+        for source_name in SOURCES:
+            assert source_name in SOURCE_URLS
 
     def test_default_limit(self) -> None:
         """Default limit is 50."""
@@ -66,8 +88,12 @@ class TestMainCLI:
     @patch("scraper.main.create_engine")
     @patch("scraper.main.Settings.from_env")
     def test_main_with_limit(
-        self, mock_settings, mock_create_engine, mock_seed,
-        mock_etl, mock_fetch_jobs,
+        self,
+        mock_settings,
+        mock_create_engine,
+        mock_seed,
+        mock_etl,
+        mock_fetch_jobs,
     ) -> None:
         """Main runs the pipeline with --limit using the API."""
         from scraper.models import JobData
@@ -99,8 +125,10 @@ class TestMainCLI:
 
         # ETL returns stats
         mock_etl.return_value = {
-            "inserted_jobs": 1, "existing_jobs": 0,
-            "skipped_invalid": 0, "companies_upserted": 1,
+            "inserted_jobs": 1,
+            "existing_jobs": 0,
+            "skipped_invalid": 0,
+            "companies_upserted": 1,
             "tech_links_created": 2,
         }
 
@@ -115,7 +143,10 @@ class TestMainCLI:
     @patch("scraper.main.create_engine")
     @patch("scraper.main.Settings.from_env")
     def test_main_empty_api(
-        self, mock_settings, mock_create_engine, mock_seed,
+        self,
+        mock_settings,
+        mock_create_engine,
+        mock_seed,
         mock_fetch_jobs,
     ) -> None:
         """Main handles empty API response gracefully."""
@@ -137,6 +168,56 @@ class TestMainCLI:
         """Main exits with error for invalid source."""
         with pytest.raises(SystemExit):
             main(["--source", "invalid_source"])
+
+    @patch("scraper.scrapers.remotive.fetch_jobs")
+    @patch("scraper.main.run_etl")
+    @patch("scraper.main.seed_source")
+    @patch("scraper.main.create_engine")
+    @patch("scraper.main.Settings.from_env")
+    def test_main_remotive_source(
+        self,
+        mock_settings,
+        mock_create_engine,
+        mock_seed,
+        mock_etl,
+        mock_remotive_fetch,
+    ) -> None:
+        """Main runs the pipeline for the remotive source."""
+        from scraper.models import JobData
+
+        mock_settings.return_value = MagicMock(
+            database_url="sqlite:///:memory:",
+            telegram_bot_token=None,
+            telegram_chat_id=None,
+        )
+        mock_engine = MagicMock()
+        mock_create_engine.return_value = mock_engine
+
+        mock_jobs = [
+            JobData(
+                title="Python Developer",
+                company="RemoteCorp",
+                url="https://remotive.com/job/123",
+                published_at=date(2026, 1, 15),
+                country="LATAM",
+                work_type="remote",
+            ),
+        ]
+        mock_remotive_fetch.return_value = mock_jobs
+
+        mock_etl.return_value = {
+            "inserted_jobs": 1,
+            "existing_jobs": 0,
+            "skipped_invalid": 0,
+            "companies_upserted": 1,
+            "tech_links_created": 0,
+        }
+
+        exit_code = main(["--source", "remotive", "--limit", "100"])
+
+        assert exit_code == 0
+        mock_remotive_fetch.assert_called_once()
+        mock_etl.assert_called_once()
 
     @patch("scraper.main.Settings.from_env")
     def test_main_config_error(self, mock_settings) -> None:

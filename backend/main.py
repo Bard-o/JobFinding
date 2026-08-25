@@ -3,9 +3,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.database import Base, engine
 import backend.models  # noqa: F401 — ensure all ORM models are registered
+from backend.database import Base, engine
 from backend.routers import (
+    export_router,
     health_router,
     jobs_router,
     seniority_router,
@@ -42,6 +43,7 @@ app.include_router(summary_router, prefix="/api/v1")
 app.include_router(technologies_router, prefix="/api/v1")
 app.include_router(jobs_router, prefix="/api/v1")
 app.include_router(seniority_router, prefix="/api/v1")
+app.include_router(export_router, prefix="/api/v1")
 
 
 @app.get("/")

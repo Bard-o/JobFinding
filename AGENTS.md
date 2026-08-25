@@ -131,4 +131,4 @@ No implementar ninguno de estos aunque parezca útil:
 - [x] Fase 7: Backend API
 - [x] Fase 8: Frontend dashboard
 - [x] Fase 9: Scraper — Remotive
-- [ ] Fase 10: Export de datos
+- [x] Fase 10: Export de datos

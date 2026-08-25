@@ -31,4 +31,19 @@ export const api = {
   getJobDetail: (id: number): Promise<Job> => fetchApi<Job>(`/jobs/${id}`),
   getSeniorityDistribution: (): Promise<SeniorityDistribution> =>
     fetchApi<SeniorityDistribution>('/seniority/distribution'),
+
+  exportCsv: (params: {
+    tech?: string
+    seniority?: string
+    work_type?: string
+    country?: string
+  } = {}) => {
+    const qs = new URLSearchParams(
+      Object.entries(params)
+        .filter(([, v]) => v !== undefined && v !== '')
+        .map(([k, v]) => [k, String(v)])
+    ).toString()
+    const url = `${API_BASE}/export/csv${qs ? `?${qs}` : ''}`
+    window.open(url, '_blank')
+  },
 }

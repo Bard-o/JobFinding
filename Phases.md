@@ -226,15 +226,15 @@ SELECT source_id, COUNT(*) FROM jobs GROUP BY source_id;"
 
 ---
 
-## Fase 10 — Export de datos
+## Fase 10 — Export de datos ✅
 
 **Objetivo:** endpoints de export generan archivos descargables.
 
 **Tareas:**
-- Implementar `GET /api/v1/export/csv` usando `csv` de stdlib Python
-- Implementar `GET /api/v1/export/excel` usando `openpyxl`
-- Ambos endpoints aceptan los mismos filtros que `/jobs`
-- Response con headers correctos (`Content-Disposition: attachment`)
+- [x] Implementar `GET /api/v1/export/csv` usando `csv` de stdlib Python
+- [x] Implementar `GET /api/v1/export/excel` usando `openpyxl`
+- [x] Ambos endpoints aceptan los mismos filtros que `/jobs`
+- [x] Response con headers correctos (`Content-Disposition: attachment`)
 
 **Verificación:**
 ```bash
