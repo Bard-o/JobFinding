@@ -5,10 +5,10 @@ from __future__ import annotations
 from unittest.mock import patch
 
 from scraper.quality.checks import (
-    _check_volume,
     _check_empty_descriptions,
     _check_sources_with_data,
     _check_tech_coverage,
+    _check_volume,
     run_checks,
 )
 
@@ -194,9 +194,7 @@ class TestRunChecks:
         assert mock_alert.call_count == 0  # type: ignore[attr-defined]
 
     @patch("scraper.quality.checks.send_alert")
-    def test_default_jobs_without_tech_is_zero(
-        self, mock_alert: object
-    ) -> None:
+    def test_default_jobs_without_tech_is_zero(self, mock_alert: object) -> None:
         """When jobs_without_tech is not provided, defaults to 0."""
         result = run_checks(
             jobs_today=100,

@@ -162,9 +162,7 @@ def run_checks(
                 sources_no_data = sorted(
                     s for s in all_sources if s not in sources_with_data
                 )
-                alert_lines.append(
-                    f"- Fuente sin datos: {', '.join(sources_no_data)}"
-                )
+                alert_lines.append(f"- Fuente sin datos: {', '.join(sources_no_data)}")
             elif check == "tecnologias_no_detectadas":
                 ratio = (jobs_without_tech / total * 100) if total > 0 else 0
                 alert_lines.append(

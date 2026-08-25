@@ -70,8 +70,7 @@ def generate(engine: Engine | None = None) -> dict[str, Any]:
         # ── Upsert en daily_snapshots ───────────────────────────────────
 
         conn.execute(
-            text(
-                """
+            text("""
                 INSERT INTO daily_snapshots
                     (snapshot_date, total_jobs, total_companies,
                      jobs_by_source, jobs_by_seniority, jobs_by_work_type,
@@ -88,8 +87,7 @@ def generate(engine: Engine | None = None) -> dict[str, Any]:
                     jobs_by_work_type = EXCLUDED.jobs_by_work_type,
                     top_technologies = EXCLUDED.top_technologies,
                     created_at = CURRENT_TIMESTAMP
-            """
-            ),
+            """),
             {
                 "snapshot_date": today,
                 "total_jobs": total_jobs,
@@ -131,61 +129,44 @@ def _get_total_companies(conn) -> int:
 
 
 def _get_jobs_by_source(conn) -> dict[str, int]:
-    result = conn.execute(
-        text(
-            """
+    result = conn.execute(text("""
         SELECT s.name, COUNT(j.id)
         FROM sources s
         LEFT JOIN jobs j ON j.source_id = s.id
         GROUP BY s.name
-    """
-        )
-    )
+    """))
     return {row[0]: row[1] for row in result}
 
 
 def _get_jobs_by_seniority(conn) -> dict[str, int]:
-    result = conn.execute(
-        text(
-            """
+    result = conn.execute(text("""
         SELECT COALESCE(seniority, 'unknown'), COUNT(*)
         FROM jobs
         GROUP BY COALESCE(seniority, 'unknown')
-    """
-        )
-    )
+    """))
     return {row[0]: row[1] for row in result}
 
 
 def _get_jobs_by_work_type(conn) -> dict[str, int]:
-    result = conn.execute(
-        text(
-            """
+    result = conn.execute(text("""
         SELECT COALESCE(work_type, 'unknown'), COUNT(*)
         FROM jobs
         GROUP BY COALESCE(work_type, 'unknown')
-    """
-        )
-    )
+    """))
     return {row[0]: row[1] for row in result}
 
 
 def _get_top_technologies(conn, limit: int) -> list[dict[str, Any]]:
     result = conn.execute(
-        text(
-            """
+        text("""
         SELECT t.name, t.category, COUNT(jt.job_id) as job_count
         FROM technologies t
         JOIN job_technologies jt ON jt.technology_id = t.id
         GROUP BY t.name, t.category
         ORDER BY job_count DESC
         LIMIT :limit
-    """
-        ),
+    """),
         {"limit": limit},
     )
 
-    return [
-        {"name": row[0], "category": row[1], "count": row[2]}
-        for row in result
-    ]
+    return [{"name": row[0], "category": row[1], "count": row[2]} for row in result]

@@ -132,7 +132,13 @@ def fetch_jobs(
             "expand[]": "company",
         }
 
-        logger.info("api_fetch_start", page_num=page, country=country_code, per_page=per_page, lang=lang)
+        logger.info(
+            "api_fetch_start",
+            page_num=page,
+            country=country_code,
+            per_page=per_page,
+            lang=lang,
+        )
         time.sleep(rate_limit)
 
         try:

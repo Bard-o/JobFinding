@@ -11,6 +11,4 @@ class JobTechnology(Base):
     job_id = Column(
         Integer, ForeignKey("jobs.id", ondelete="CASCADE"), primary_key=True
     )
-    technology_id = Column(
-        Integer, ForeignKey("technologies.id"), primary_key=True
-    )
+    technology_id = Column(Integer, ForeignKey("technologies.id"), primary_key=True)

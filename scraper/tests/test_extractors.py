@@ -7,7 +7,6 @@ import pytest
 from scraper.extractors.seniority_extractor import extract_seniority_from_text
 from scraper.extractors.tech_extractor import extract_technologies_from_text
 
-
 # ── Fixtures ──────────────────────────────────────────────────────────────
 
 

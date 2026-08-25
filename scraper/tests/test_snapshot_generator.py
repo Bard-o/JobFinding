@@ -12,12 +12,11 @@ from analytics.snapshot_generator import (
     _get_jobs_by_seniority,
     _get_jobs_by_source,
     _get_jobs_by_work_type,
+    _get_top_technologies,
     _get_total_companies,
     _get_total_jobs,
-    _get_top_technologies,
     generate,
 )
-
 
 # ── Fixtures ──────────────────────────────────────────────────────────────
 

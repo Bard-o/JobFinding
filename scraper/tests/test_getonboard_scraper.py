@@ -74,7 +74,9 @@ class TestFetchJobDetailHappyPath:
 
     @patch("scraper.scrapers.getonboard.time")
     @patch("scraper.scrapers.getonboard.requests.Session.get")
-    def test_fetch_returns_html(self, mock_get: MagicMock, mock_time: MagicMock) -> None:
+    def test_fetch_returns_html(
+        self, mock_get: MagicMock, mock_time: MagicMock
+    ) -> None:
         """Successful fetch returns the HTML content."""
         mock_time.monotonic.return_value = 100.0
         mock_response = MagicMock()

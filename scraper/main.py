@@ -31,8 +31,8 @@ logger = structlog.get_logger(__name__)
 
 # Supported sources and their IDs in the database
 SOURCES: dict[str, int] = {
-    "getonbrd": 1,   # getonbrd.com (formerly getonboard)
-    "remotive": 2,    # remotive.com
+    "getonbrd": 1,  # getonbrd.com (formerly getonboard)
+    "remotive": 2,  # remotive.com
 }
 
 # Base URLs for each source (used for seeding)

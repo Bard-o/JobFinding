@@ -1,6 +1,6 @@
 """DailySnapshot model."""
 
-from sqlalchemy import Column, Date, DateTime, Integer, JSON
+from sqlalchemy import JSON, Column, Date, DateTime, Integer
 
 from backend.database import Base
 

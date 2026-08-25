@@ -6,8 +6,8 @@ or when zero jobs are scraped.
 
 from __future__ import annotations
 
-import structlog
 import requests
+import structlog
 
 from scraper.config import Settings
 

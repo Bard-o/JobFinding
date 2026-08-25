@@ -24,10 +24,25 @@ CATEGORY = "software-development"
 LIMIT = 100
 
 LATAM_KEYWORDS = [
-    "latam", "latin america", "latin america", "sudamerica",
-    "argentina", "brasil", "brazil", "chile", "colombia",
-    "mexico", "peru", "uruguay", "paraguay", "ecuador",
-    "remote", "worldwide", "anywhere", "latin", "south america",
+    "latam",
+    "latin america",
+    "latin america",
+    "sudamerica",
+    "argentina",
+    "brasil",
+    "brazil",
+    "chile",
+    "colombia",
+    "mexico",
+    "peru",
+    "uruguay",
+    "paraguay",
+    "ecuador",
+    "remote",
+    "worldwide",
+    "anywhere",
+    "latin",
+    "south america",
 ]
 
 WORK_TYPE_MAP: dict[str, str] = {
@@ -39,9 +54,15 @@ WORK_TYPE_MAP: dict[str, str] = {
 }
 
 _REMOTE_INDICATORS = {
-    "remote", "worldwide", "anywhere",
+    "remote",
+    "worldwide",
+    "anywhere",
     # Broad regional terms mean "work from anywhere in this region" = remote
-    "latam", "latin america", "south america", "sudamerica", "latin",
+    "latam",
+    "latin america",
+    "south america",
+    "sudamerica",
+    "latin",
 }
 
 
@@ -62,7 +83,10 @@ def _normalize_work_type(job_type: str, location: str | None) -> str:
     """
     location_lower = location.lower() if location else ""
     if job_type == "full_time":
-        if any(indicator in location_lower for indicator in _REMOTE_INDICATORS) or not location:
+        if (
+            any(indicator in location_lower for indicator in _REMOTE_INDICATORS)
+            or not location
+        ):
             return "remote"
         return "onsite"
     return WORK_TYPE_MAP.get(job_type, "onsite")

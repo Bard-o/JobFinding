@@ -32,10 +32,7 @@ def list_technologies(db: Session = Depends(get_db)) -> list[TechnologyWithCount
         .all()
     )
 
-    return [
-        TechnologyWithCount(name=r[0], category=r[1], count=r[2])
-        for r in results
-    ]
+    return [TechnologyWithCount(name=r[0], category=r[1], count=r[2]) for r in results]
 
 
 @router.get("/technologies/trends")

@@ -19,7 +19,6 @@ from scraper.etl.pipeline import (
 )
 from scraper.models import JobData
 
-
 # ── Fixtures ──────────────────────────────────────────────────────────────
 
 
@@ -59,44 +58,58 @@ def engine():
     """In-memory SQLite engine with schema pre-created."""
     eng = create_engine("sqlite:///:memory:")
     with eng.begin() as conn:
-        conn.execute(text(
-            "CREATE TABLE sources (id INTEGER PRIMARY KEY, name VARCHAR(100) "
-            "UNIQUE NOT NULL, base_url TEXT NOT NULL, active BOOLEAN DEFAULT TRUE, "
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
-        conn.execute(text(
-            "CREATE TABLE companies (id INTEGER PRIMARY KEY, name VARCHAR(255) "
-            "UNIQUE NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
-        conn.execute(text(
-            "CREATE TABLE jobs (id INTEGER PRIMARY KEY, source_id INTEGER NOT "
-            "NULL REFERENCES sources(id), company_id INTEGER REFERENCES "
-            "companies(id), title VARCHAR(255) NOT NULL, country VARCHAR(100), "
-            "published_at DATE, url TEXT NOT NULL UNIQUE, work_type VARCHAR(20), "
-            "description TEXT, salary_raw TEXT, seniority VARCHAR(20), "
-            "scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
-        conn.execute(text(
-            "CREATE TABLE technologies (id INTEGER PRIMARY KEY, name "
-            "VARCHAR(100) NOT NULL UNIQUE, category VARCHAR(50) NOT NULL, "
-            "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
-        ))
-        conn.execute(text(
-            "CREATE TABLE job_technologies (job_id INTEGER NOT NULL REFERENCES "
-            "jobs(id) ON DELETE CASCADE, technology_id INTEGER NOT NULL REFERENCES "
-            "technologies(id), PRIMARY KEY (job_id, technology_id))"
-        ))
+        conn.execute(
+            text(
+                "CREATE TABLE sources (id INTEGER PRIMARY KEY, name VARCHAR(100) "
+                "UNIQUE NOT NULL, base_url TEXT NOT NULL, active BOOLEAN DEFAULT TRUE, "
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        conn.execute(
+            text(
+                "CREATE TABLE companies (id INTEGER PRIMARY KEY, name VARCHAR(255) "
+                "UNIQUE NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        conn.execute(
+            text(
+                "CREATE TABLE jobs (id INTEGER PRIMARY KEY, source_id INTEGER NOT "
+                "NULL REFERENCES sources(id), company_id INTEGER REFERENCES "
+                "companies(id), title VARCHAR(255) NOT NULL, country VARCHAR(100), "
+                "published_at DATE, url TEXT NOT NULL UNIQUE, work_type VARCHAR(20), "
+                "description TEXT, salary_raw TEXT, seniority VARCHAR(20), "
+                "scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        conn.execute(
+            text(
+                "CREATE TABLE technologies (id INTEGER PRIMARY KEY, name "
+                "VARCHAR(100) NOT NULL UNIQUE, category VARCHAR(50) NOT NULL, "
+                "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            )
+        )
+        conn.execute(
+            text(
+                "CREATE TABLE job_technologies (job_id INTEGER NOT NULL REFERENCES "
+                "jobs(id) ON DELETE CASCADE, technology_id INTEGER NOT NULL REFERENCES "
+                "technologies(id), PRIMARY KEY (job_id, technology_id))"
+            )
+        )
         # Seed source and technologies
-        conn.execute(text(
-            "INSERT INTO sources (id, name, base_url, active) VALUES "
-            "(1, 'getonboard', 'https://www.getonboard.com', 1)"
-        ))
-        conn.execute(text(
-            "INSERT INTO technologies (name, category) VALUES "
-            "('React', 'framework'), ('JavaScript', 'language'), "
-            "('Python', 'language'), ('Django', 'framework')"
-        ))
+        conn.execute(
+            text(
+                "INSERT INTO sources (id, name, base_url, active) VALUES "
+                "(1, 'getonboard', 'https://www.getonboard.com', 1)"
+            )
+        )
+        conn.execute(
+            text(
+                "INSERT INTO technologies (name, category) VALUES "
+                "('React', 'framework'), ('JavaScript', 'language'), "
+                "('Python', 'language'), ('Django', 'framework')"
+            )
+        )
     return eng
 
 
@@ -109,7 +122,9 @@ class TestIsValidJob:
     def test_valid_job(self) -> None:
         """A job with all required fields is valid."""
         job = JobData(
-            title="Dev", company="Corp", url="https://example.com/jobs/1",
+            title="Dev",
+            company="Corp",
+            url="https://example.com/jobs/1",
             published_at=date(2024, 1, 1),
         )
         assert _is_valid_job(job) is True
@@ -117,7 +132,9 @@ class TestIsValidJob:
     def test_missing_title(self) -> None:
         """A job with empty title is invalid."""
         job = JobData(
-            title="", company="Corp", url="https://example.com/jobs/1",
+            title="",
+            company="Corp",
+            url="https://example.com/jobs/1",
             published_at=date(2024, 1, 1),
         )
         assert _is_valid_job(job) is False
@@ -125,7 +142,9 @@ class TestIsValidJob:
     def test_missing_company(self) -> None:
         """A job with empty company is invalid."""
         job = JobData(
-            title="Dev", company="", url="https://example.com/jobs/1",
+            title="Dev",
+            company="",
+            url="https://example.com/jobs/1",
             published_at=date(2024, 1, 1),
         )
         assert _is_valid_job(job) is False
@@ -133,7 +152,9 @@ class TestIsValidJob:
     def test_missing_url(self) -> None:
         """A job with empty url is invalid."""
         job = JobData(
-            title="Dev", company="Corp", url="",
+            title="Dev",
+            company="Corp",
+            url="",
             published_at=date(2024, 1, 1),
         )
         assert _is_valid_job(job) is False
@@ -141,7 +162,9 @@ class TestIsValidJob:
     def test_missing_published_at(self) -> None:
         """A job with None published_at is invalid."""
         job = JobData(
-            title="Dev", company="Corp", url="https://example.com/jobs/1",
+            title="Dev",
+            company="Corp",
+            url="https://example.com/jobs/1",
             published_at=None,
         )
         assert _is_valid_job(job) is False
@@ -149,7 +172,9 @@ class TestIsValidJob:
     def test_whitespace_only_title(self) -> None:
         """A job with whitespace-only title is invalid."""
         job = JobData(
-            title="   ", company="Corp", url="https://example.com/jobs/1",
+            title="   ",
+            company="Corp",
+            url="https://example.com/jobs/1",
             published_at=date(2024, 1, 1),
         )
         assert _is_valid_job(job) is False
@@ -157,7 +182,9 @@ class TestIsValidJob:
     def test_whitespace_only_company(self) -> None:
         """A job with whitespace-only company is invalid."""
         job = JobData(
-            title="Dev", company="   ", url="https://example.com/jobs/1",
+            title="Dev",
+            company="   ",
+            url="https://example.com/jobs/1",
             published_at=date(2024, 1, 1),
         )
         assert _is_valid_job(job) is False
@@ -165,9 +192,15 @@ class TestIsValidJob:
     def test_optional_fields_can_be_none(self) -> None:
         """A job with None optional fields (country, salary, etc.) is valid."""
         job = JobData(
-            title="Dev", company="Corp", url="https://example.com/jobs/1",
-            published_at=date(2024, 1, 1), country=None, salary_raw=None,
-            description=None, work_type=None, seniority=None,
+            title="Dev",
+            company="Corp",
+            url="https://example.com/jobs/1",
+            published_at=date(2024, 1, 1),
+            country=None,
+            salary_raw=None,
+            description=None,
+            work_type=None,
+            seniority=None,
         )
         assert _is_valid_job(job) is True
 
@@ -207,10 +240,18 @@ class TestUpsertCompanies:
     def test_deduplicate_same_company(self, engine) -> None:
         """Multiple jobs from the same company produce only one company row."""
         jobs = [
-            JobData(title="Dev1", company="Acme", url="https://ex.com/jobs/1",
-                    published_at=date(2024, 1, 1)),
-            JobData(title="Dev2", company="Acme", url="https://ex.com/jobs/2",
-                    published_at=date(2024, 1, 2)),
+            JobData(
+                title="Dev1",
+                company="Acme",
+                url="https://ex.com/jobs/1",
+                published_at=date(2024, 1, 1),
+            ),
+            JobData(
+                title="Dev2",
+                company="Acme",
+                url="https://ex.com/jobs/2",
+                published_at=date(2024, 1, 2),
+            ),
         ]
         company_ids = _upsert_companies(jobs, engine)
         assert len(company_ids) == 1
@@ -226,9 +267,7 @@ class TestInsertJobs:
     def test_insert_new_jobs(self, engine, sample_jobs) -> None:
         """New jobs are inserted successfully."""
         company_ids = _upsert_companies(sample_jobs, engine)
-        inserted, existing = _insert_jobs(
-            sample_jobs, company_ids, engine, source_id=1
-        )
+        inserted, existing = _insert_jobs(sample_jobs, company_ids, engine, source_id=1)
         assert inserted == 2
         assert existing == 0
 
@@ -242,9 +281,7 @@ class TestInsertJobs:
         # First insert
         _insert_jobs(sample_jobs, company_ids, engine, source_id=1)
         # Second insert — same URLs should be skipped
-        inserted, existing = _insert_jobs(
-            sample_jobs, company_ids, engine, source_id=1
-        )
+        inserted, existing = _insert_jobs(sample_jobs, company_ids, engine, source_id=1)
         assert inserted == 0
         assert existing == 2
 
@@ -256,15 +293,19 @@ class TestInsertJobs:
     def test_insert_with_none_optional_fields(self, engine) -> None:
         """Jobs with None optional fields insert correctly."""
         job = JobData(
-            title="Dev", company="Corp", url="https://ex.com/jobs/1",
-            published_at=date(2024, 1, 1), country=None,
-            work_type=None, seniority=None, salary_raw=None,
-            description=None, tags=[],
+            title="Dev",
+            company="Corp",
+            url="https://ex.com/jobs/1",
+            published_at=date(2024, 1, 1),
+            country=None,
+            work_type=None,
+            seniority=None,
+            salary_raw=None,
+            description=None,
+            tags=[],
         )
         company_ids = _upsert_companies([job], engine)
-        inserted, existing = _insert_jobs(
-            [job], company_ids, engine, source_id=1
-        )
+        inserted, existing = _insert_jobs([job], company_ids, engine, source_id=1)
         assert inserted == 1
 
         with engine.begin() as conn:
@@ -302,8 +343,11 @@ class TestLinkTechnologies:
     def test_unknown_tags_skipped(self, engine) -> None:
         """Unknown tags are silently skipped with a debug log."""
         job = JobData(
-            title="Dev", company="Corp", url="https://ex.com/jobs/1",
-            published_at=date(2024, 1, 1), tags=["unknown-tech"],
+            title="Dev",
+            company="Corp",
+            url="https://ex.com/jobs/1",
+            published_at=date(2024, 1, 1),
+            tags=["unknown-tech"],
         )
         company_ids = _upsert_companies([job], engine)
         _insert_jobs([job], company_ids, engine, source_id=1)
@@ -314,8 +358,11 @@ class TestLinkTechnologies:
     def test_case_insensitive_tag_matching(self, engine) -> None:
         """Tag matching is case-insensitive (react → React)."""
         job = JobData(
-            title="Dev", company="Corp", url="https://ex.com/jobs/1",
-            published_at=date(2024, 1, 1), tags=["react"],
+            title="Dev",
+            company="Corp",
+            url="https://ex.com/jobs/1",
+            published_at=date(2024, 1, 1),
+            tags=["react"],
         )
         company_ids = _upsert_companies([job], engine)
         _insert_jobs([job], company_ids, engine, source_id=1)
@@ -326,8 +373,11 @@ class TestLinkTechnologies:
     def test_no_tags_no_links(self, engine) -> None:
         """Jobs without tags create no technology links."""
         job = JobData(
-            title="Dev", company="Corp", url="https://ex.com/jobs/1",
-            published_at=date(2024, 1, 1), tags=[],
+            title="Dev",
+            company="Corp",
+            url="https://ex.com/jobs/1",
+            published_at=date(2024, 1, 1),
+            tags=[],
         )
         company_ids = _upsert_companies([job], engine)
         _insert_jobs([job], company_ids, engine, source_id=1)
@@ -343,9 +393,7 @@ class TestRunEtl:
     """Test the full run_etl pipeline."""
 
     @patch("scraper.etl.pipeline.send_alert")
-    def test_full_pipeline_happy_path(
-        self, mock_alert, engine, sample_jobs
-    ) -> None:
+    def test_full_pipeline_happy_path(self, mock_alert, engine, sample_jobs) -> None:
         """Full pipeline inserts jobs, companies, and tech links."""
         stats = run_etl(sample_jobs, engine, source_id=1)
 
@@ -360,11 +408,15 @@ class TestRunEtl:
     def test_pipeline_skips_invalid_jobs(self, mock_alert, engine) -> None:
         """Invalid jobs are skipped and counted."""
         invalid_job = JobData(
-            title="", company="Corp", url="https://ex.com/jobs/1",
+            title="",
+            company="Corp",
+            url="https://ex.com/jobs/1",
             published_at=date(2024, 1, 1),
         )
         valid_job = JobData(
-            title="Dev", company="Corp", url="https://ex.com/jobs/2",
+            title="Dev",
+            company="Corp",
+            url="https://ex.com/jobs/2",
             published_at=date(2024, 1, 1),
         )
         stats = run_etl([invalid_job, valid_job], engine, source_id=1)
@@ -376,8 +428,11 @@ class TestRunEtl:
     def test_pipeline_deduplicates_urls(self, mock_alert, engine) -> None:
         """Running pipeline twice doesn't duplicate jobs."""
         job = JobData(
-            title="Dev", company="Corp", url="https://ex.com/jobs/1",
-            published_at=date(2024, 1, 1), tags=[],
+            title="Dev",
+            company="Corp",
+            url="https://ex.com/jobs/1",
+            published_at=date(2024, 1, 1),
+            tags=[],
         )
         run_etl([job], engine, source_id=1)
         stats = run_etl([job], engine, source_id=1)
@@ -389,7 +444,10 @@ class TestRunEtl:
     def test_pipeline_all_invalid_sends_alert(self, mock_alert, engine) -> None:
         """If all jobs are invalid, an alert is sent."""
         invalid_job = JobData(
-            title="", company="", url="", published_at=None,
+            title="",
+            company="",
+            url="",
+            published_at=None,
         )
         stats = run_etl([invalid_job], engine, source_id=1)
 
@@ -401,8 +459,11 @@ class TestRunEtl:
     def test_pipeline_zero_inserts_alerts(self, mock_alert, engine) -> None:
         """If all valid jobs already exist in DB, an alert is sent."""
         job = JobData(
-            title="Dev", company="Corp", url="https://ex.com/jobs/1",
-            published_at=date(2024, 1, 1), tags=[],
+            title="Dev",
+            company="Corp",
+            url="https://ex.com/jobs/1",
+            published_at=date(2024, 1, 1),
+            tags=[],
         )
         # First run: inserts
         run_etl([job], engine, source_id=1)

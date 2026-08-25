@@ -45,9 +45,7 @@ def extract_seniority_from_text(description: str | None) -> Optional[str]:
     return None
 
 
-def update_job_seniority(
-    job_id: int, description: str | None, engine
-) -> bool:
+def update_job_seniority(job_id: int, description: str | None, engine) -> bool:
     """Extrae seniority de la descripción y actualiza el campo seniority del job.
 
     Args:

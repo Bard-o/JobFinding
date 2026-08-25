@@ -14,9 +14,7 @@ router = APIRouter(prefix="", tags=["summary"])
 @router.get("/summary", response_model=SummaryResponse)
 def get_summary(db: Session = Depends(get_db)) -> SummaryResponse:
     snapshot = (
-        db.query(DailySnapshot)
-        .order_by(desc(DailySnapshot.snapshot_date))
-        .first()
+        db.query(DailySnapshot).order_by(desc(DailySnapshot.snapshot_date)).first()
     )
 
     if not snapshot:

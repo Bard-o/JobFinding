@@ -72,7 +72,12 @@ def run_etl(jobs: List[JobData], engine: Engine, source_id: int = 1) -> dict:
         )
         return stats
 
-    logger.info("etl_validation_done", total=len(jobs), valid=len(valid_jobs), invalid=stats["skipped_invalid"])
+    logger.info(
+        "etl_validation_done",
+        total=len(jobs),
+        valid=len(valid_jobs),
+        invalid=stats["skipped_invalid"],
+    )
 
     # Step 2: Upsert companies and collect name→id mapping
     company_ids = _upsert_companies(valid_jobs, engine)
@@ -116,9 +121,7 @@ def _is_valid_job(job: JobData) -> bool:
     return True
 
 
-def _upsert_companies(
-    jobs: List[JobData], engine: Engine
-) -> dict[str, int]:
+def _upsert_companies(jobs: List[JobData], engine: Engine) -> dict[str, int]:
     """Upsert unique company names and return a name→id mapping.
 
     Uses INSERT ... ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
@@ -348,10 +351,7 @@ def run_quality_checks(engine: Engine) -> dict:
     with engine.begin() as conn:
         # Jobs scraped today
         today_jobs = conn.execute(
-            text(
-                "SELECT COUNT(*) FROM jobs "
-                "WHERE DATE(scraped_at) = CURRENT_DATE"
-            )
+            text("SELECT COUNT(*) FROM jobs " "WHERE DATE(scraped_at) = CURRENT_DATE")
         ).scalar()
 
         # Average daily job count over the last 7 days
@@ -376,10 +376,7 @@ def run_quality_checks(engine: Engine) -> dict:
 
         # Total jobs scraped today
         total = conn.execute(
-            text(
-                "SELECT COUNT(*) FROM jobs "
-                "WHERE DATE(scraped_at) = CURRENT_DATE"
-            )
+            text("SELECT COUNT(*) FROM jobs " "WHERE DATE(scraped_at) = CURRENT_DATE")
         ).scalar()
 
         # Sources that had new jobs today
