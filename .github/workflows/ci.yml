@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # The backend opens a connection at import time, so the suite needs a real
+    # database rather than a mock.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: jobfinding
+          POSTGRES_PASSWORD: changeme
+          POSTGRES_DB: jobfinding
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://jobfinding:changeme@localhost:5432/jobfinding
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install -r backend/requirements-dev.txt
+          pip install -r scraper/requirements.txt
+
+      - name: Apply schema
+        run: |
+          psql "$DATABASE_URL" -f database/init.sql
+          psql "$DATABASE_URL" -f database/schema.sql
+          psql "$DATABASE_URL" -f database/seeds/technologies.sql
+          psql "$DATABASE_URL" -f database/seeds/sources.sql
+
+      - name: Format check
+        run: |
+          black --check .
+          isort --check-only .
+
+      - name: Test
+        run: pytest -q
